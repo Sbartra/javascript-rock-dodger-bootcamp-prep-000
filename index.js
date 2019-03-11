@@ -1,121 +1,112 @@
-/**
-const DODGER = document.getElementById('dodger');
-const GAME = document.getElementById('game');
-const GAME_HEIGHT = 400;
-const GAME_WIDTH = 400;
-const LEFT_ARROW = 37; // use e.which!
-const RIGHT_ARROW = 39; // use e.which!
-const ROCKS = [];
-const START = document.getElementById('start');
+const DODGER = document.getElementById('dodger')
+const GAME = document.getElementById('game')
+const GAME_HEIGHT = 400
+const GAME_WIDTH = 400
+const LEFT_ARROW = 37 // use e.which!
+const RIGHT_ARROW = 39 // use e.which!
+const START = document.getElementById('start')
 
-var gameInterval = null;
+const ROCKS = []
 
-/** game code **/
+var gameInterval = null
 
 function checkCollision(rock) {
-  const top = positionToInteger(rock.style.top);
+  const top = positionToInteger(rock.style.top)
 
   // rocks are 20px high
   // DODGER is 20px high
   // GAME_HEIGHT - 20 - 20 = 360px;
   if (top > 360) {
-    const dodgerLeftEdge = positionToInteger(DODGER.style.left);
+    const dodgerLeftEdge = positionToInteger(DODGER.style.left)
+    const dodgerRightEdge = dodgerLeftEdge + 40;
+    const rockLeftEdge = positionToInteger(rock.style.left)
+    const rockRightEdge = rockLeftEdge + 20;
 
-    // DODGER is 40 pixels wide
-    const dodgerRightEdge = dodgerLeftEdge+40;
-
-    const rockLeftEdge = positionToInteger(rock.style.left);
-
-    // ROCK is 20 pixel's wide
-    const rockRightEdge = rockLeftEdge+20;
-
-    if (rockLeftEdge <= dodgerLeftEdge && rockRightEdge >= dodgerLeftEdge) {
-      return true;
-    } else if (rockLeftEdge >= dodgerLeftEdge && rockRightEdge <= dodgerRightEdge){
-      return true;
-    } else if (rockLeftEdge <= dodgerRightEdge && rockRightEdge >= dodgerRightEdge){
-      return true;
-    }
+    return (
+      (rockLeftEdge <= dodgerLeftEdge && rockRightEdge >= dodgerLeftEdge) ||
+      (rockLeftEdge >= dodgerLeftEdge && rockRightEdge <= dodgerRightEdge) ||
+      (rockLeftEdge <= dodgerRightEdge && rockRightEdge >= dodgerRightEdge)
+    )
   }
 }
 
 function createRock(x) {
-  const rock = document.createElement('div');
+  const rock = document.createElement('div')
 
-  rock.className = 'rock';
-  rock.style.left = `${x}px`;
+  rock.className = 'rock'
+  rock.style.left = `${x}px`
 
-  var top = 0;
+  var top = rock.style.top = 0
 
-  rock.style.top = top;
-
-  GAME.appendChild(rock);
+  GAME.appendChild(rock)
 
   function moveRock() {
+    rock.style.top = `${top += 2}px`;
 
-     if (checkCollision(rock)){
-       endGame();
-     } else if ((top + 10)>= GAME_HEIGHT){
+    if (checkCollision(rock)) {
+      return endGame()
+    }
 
-       rock.remove();
-     } else {
-
-       top+=2;
-       rock.style.top = `${top}px`;
-       window.requestAnimationFrame(moveRock);
-     }
+    if (top < GAME_HEIGHT) {
+      window.requestAnimationFrame(moveRock)
+    } else {
+      rock.remove()
+    }
   }
 
-  window.requestAnimationFrame(moveRock);
+  window.requestAnimationFrame(moveRock)
 
-  ROCKS.push(rock);
+  ROCKS.push(rock)
 
-  return rock;
+  return rock
 }
 
-/** End game **/
 function endGame() {
-  clearInterval(gameInterval);
-  ROCKS.forEach(function (rock){
-    rock.remove();
-  });
-  document.removeEventListener('keydown', moveDodger);
-  alert("YOU LOSE!");
+  clearInterval(gameInterval)
+
+  ROCKS.forEach(function(rock) { rock.remove() })
+
+  document.removeEventListener('keydown', moveDodger)
+
+  START.innerHTML = 'Play again?'
+  START.style.display = 'inline'
+
+  return alert('YOU LOSE!')
 }
 
 function moveDodger(e) {
-   if (e.which === LEFT_ARROW){
-      e.preventDefault();
-      e.stopPropagation();
-      moveDodgerLeft();
-   } else if ( e.which === RIGHT_ARROW){
-     e.preventDefault();
-     e.stopPropagation();
-     moveDodgerRight();
-   }
+  const code = e.which
 
+  if ([LEFT_ARROW, RIGHT_ARROW].indexOf(code) > -1) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  if (code === LEFT_ARROW) {
+    moveDodgerLeft()
+  } else if (code === RIGHT_ARROW) {
+    moveDodgerRight()
+  }
 }
 
 function moveDodgerLeft() {
+  window.requestAnimationFrame(function() {
+    const left = positionToInteger(DODGER.style.left)
 
-   function doMove() {
-     const dodgerLeftEdge = positionToInteger(DODGER.style.left);
-     const newLeft = Math.max(0, dodgerLeftEdge-4);
-     DODGER.style.left =  `${newLeft}px`;
-   }
-
-   window.requestAnimationFrame(doMove);
+    if (left > 0) {
+      DODGER.style.left = `${left - 4}px`;
+    }
+  })
 }
 
 function moveDodgerRight() {
+  window.requestAnimationFrame(function() {
+    const left = positionToInteger(DODGER.style.left)
 
-   function doMove() {
-     const dodgerLeftEdge = positionToInteger(DODGER.style.left);
-     const newLeft = Math.min(GAME_WIDTH-40, dodgerLeftEdge+4);
-     DODGER.style.left =  `${newLeft}px`;
-   }
-
-   window.requestAnimationFrame(doMove);
+    if (left < 360) {
+      DODGER.style.left = `${left + 4}px`;
+    }
+  })
 }
 
 function positionToInteger(p) {
