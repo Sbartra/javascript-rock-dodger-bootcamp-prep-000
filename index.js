@@ -21,12 +21,12 @@ function checkCollision(rock) {
   if (top > 360) {
     const dodgerLeftEdge = positionToInteger(DODGER.style.left);
 
-    // DODGER is 40 pixels wide 
+    // DODGER is 40 pixels wide
     const dodgerRightEdge = dodgerLeftEdge+40;
 
     const rockLeftEdge = positionToInteger(rock.style.left);
 
-    // ROCK is 20 pixel's wide 
+    // ROCK is 20 pixel's wide
     const rockRightEdge = rockLeftEdge+20;
 
     if (rockLeftEdge <= dodgerLeftEdge && rockRightEdge >= dodgerLeftEdge) {
@@ -52,7 +52,7 @@ function createRock(x) {
   GAME.appendChild(rock);
 
   function moveRock() {
-    
+
      if (checkCollision(rock)){
        endGame();
      } else if ((top + 10)>= GAME_HEIGHT){
@@ -65,9 +65,9 @@ function createRock(x) {
        window.requestAnimationFrame(moveRock);
      }
   }
-  
+
   window.requestAnimationFrame(moveRock);
-  
+
   ROCKS.push(rock);
 
   return rock;
@@ -97,7 +97,7 @@ function moveDodger(e) {
 }
 
 function moveDodgerLeft() {
-  
+
    function doMove() {
      const dodgerLeftEdge = positionToInteger(DODGER.style.left);
      const newLeft = Math.max(0, dodgerLeftEdge-4);
